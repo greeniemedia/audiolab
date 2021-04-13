@@ -1,0 +1,1 @@
+use the 'play' command to listen to wave files from the console.

@@ -12,7 +12,10 @@ obj.setnchannels(1)
 obj.setsampwidth(2)
 obj.setframerate(sampleRate)
 for i in range(99999):
-	value = random.randint(-32767, 32767)
+	top = 32767
+	range_ = top*2
+	#value = random.randint(-32767, 32767)
+	value = int(((i%1000)*(range_/1000.0))-top)
 	data = struct.pack('<h', value)
 	obj.writeframesraw(data)
 
