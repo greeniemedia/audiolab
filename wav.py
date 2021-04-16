@@ -22,9 +22,15 @@ obj.setsampwidth(2)
 obj.setframerate(sampleRate)
 for i in range(frames):
 	#value = random.randint(-32767, 32767)
-	value = int(((i%1000)*(range_/1000.0))-top)
-	samples[i] = value
-	data = struct.pack('<h', value)
+	#value = int(((i%2000)*(range_/2000.0))-top)
+	t = i%4000
+	if (t<=2000):
+		value = (range_ * (t/2000.0)) - top
+	else:
+		value = (((2000-(t-2000)) /2000.0) * range_) - top
+
+	samples[i] = int(value)
+	data = struct.pack('<h', int(value))
 	obj.writeframesraw(data)
 
 obj.close()
