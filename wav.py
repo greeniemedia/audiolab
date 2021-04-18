@@ -4,15 +4,16 @@ import math
 import random
 import time
 import sys
+import math
 
 import pygame as pg
 
 sampleRate = 44100.0 #hertz
-duration = 1.0 # seconds
+#duration = 1.0 # seconds
+duration = 0
 frequency = 440.0 # hertz
-frames = 99999
 
-samples = [None] * frames
+#samples = [None] * frames
 top = 32767
 range_ = top*2
 
@@ -20,16 +21,67 @@ obj = wave.open("output.wav", 'w')
 obj.setnchannels(1)
 obj.setsampwidth(2)
 obj.setframerate(sampleRate)
+def triangle_wave(frames, interval):
+	samples = [None] * frames
+
+	idiv2 = interval/2.0
+	for i in range(frames):
+		t = i%interval
+		if (t<=idiv2):
+			value = (range_ * (t/idiv2)) - top
+		else:
+			value = (((idiv2-(t-idiv2)) /idiv2) * range_) - top
+
+		samples[i] = int(value)
+
+	return samples
+
+def ramp_wave(frames, interval):
+	samples = [None] * frames
+
+	for i in range(frames):
+		value = int(((i%interval)*(range_/float(interval)))-top)
+		samples[i] = int(value)
+
+	return samples
+
+def sine_wave(frames, interval):
+	samples = [None] * frames
+
+	R = math.pi * 2
+
+	for i in range(frames):
+		t = ((i%interval) / float(interval)) * R
+		#print (t) 
+		value = math.sin(t) * top
+		#print(value)
+
+		samples[i] = int(value)
+
+	return samples
+
+	
+t = triangle_wave(1000*50, 1000)
+r = ramp_wave(2000*50, 2000)
+
+#s = triangle_wave(1000*500, 1000)
+#for i in range(len(s)):
+#	pass
+
+#samples = t + r + t + r + r + t + t + r
+#samples = triagle_wave(
+#samples = t + t
+
+mult = 10
+samples = sine_wave(250*10*mult, 250) + sine_wave(100*15*mult, 100) + sine_wave(300*6*mult, 300) + sine_wave(150*10*mult, 150)
+
+frames = len(samples)
+	
 for i in range(frames):
 	#value = random.randint(-32767, 32767)
-	#value = int(((i%2000)*(range_/2000.0))-top)
-	t = i%4000
-	if (t<=2000):
-		value = (range_ * (t/2000.0)) - top
-	else:
-		value = (((2000-(t-2000)) /2000.0) * range_) - top
 
-	samples[i] = int(value)
+	value = samples[i]
+	#print(value)
 	data = struct.pack('<h', int(value))
 	obj.writeframesraw(data)
 
@@ -52,12 +104,12 @@ _points = []
 for i in range(0, frames, 200):
 	_points.append(points[i])
 	#print(i)
-	print(i)
-	print(points[i])
-	print(_points[len(_points)-1])
+	#print(i)
+	#print(points[i])
+	#print(_points[len(_points)-1])
 
 
-print(_points)
+#print(_points)
 #points = _points
 
 pg.draw.lines(win, [255,0,255], False, _points, 2)
